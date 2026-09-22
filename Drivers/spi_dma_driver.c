@@ -34,10 +34,8 @@ bool spi1_dma_transmit(uint8_t *data, uint16_t length)
 }
 void DMA2_Stream3_IRQHandler(void)
 {
-    *(volatile uint32_t*)(DMA2_BASE + 0x0C) = (1 << 27); /
-
+    *(volatile uint32_t*)(DMA2_BASE + 0x0C) = (1 << 27);
     spi1_dma_transfer_complete = true;
-
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     xSemaphoreGiveFromISR(xSpiDmaCompleteSemaphore, &xHigherPriorityTaskWoken);
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
