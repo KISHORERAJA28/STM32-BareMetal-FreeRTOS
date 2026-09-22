@@ -1,8 +1,3 @@
-// hardware_registers.h.
-// Custom register-level base addresses and bit definitions.
-// Target: STM32F4 (Cortex-M4) family — verify exact offsets against
-// your specific part's reference manual (RM0090 for F405/F407/F429).
-
 #ifndef HARDWARE_REGISTERS_H
 #define HARDWARE_REGISTERS_H
 
@@ -33,10 +28,7 @@
 #define SPI_CR2_TXDMAEN (1 << 1)   // Tx buffer DMA enable
 #define SPI_SR_TXE      (1 << 1)
 
-// DMA2 Stream3 (SPI1_TX on most STM32F4 parts).
-// Note: verify the DMA request mapping table in your part's reference.
-// manual — SPI1_TX may map to a different stream/channel depending on.
-// the exact STM32F4 variant.
+// DMA2 Stream3.
 #define DMA2_BASE           0x40026400UL
 #define DMA2_S3_BASE        (DMA2_BASE + 0x10 + (0x18 * 3))
 #define DMA2_S3CR       (*(volatile uint32_t*)(DMA2_S3_BASE + 0x00))
@@ -53,8 +45,6 @@
 #define NVIC_ISER1      (*(volatile uint32_t*)0xE000E104UL) // IRQs 32-63
 
 // DMA2_Stream3_IRQn = 58 on STM32F4 -> bit (58-32)=26 in ISER1.
-// CONFIRM this against your device's startup_stm32f4xx.s / vector table,
-// before relying on it — IRQ numbering can differ by part variant.
 #define DMA2_STREAM3_IRQ_BIT   (1 << 26)
 
 #endif
