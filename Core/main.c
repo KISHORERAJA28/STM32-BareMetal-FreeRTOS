@@ -1,10 +1,3 @@
-
- @file           : main.c
- @brief          : Bare-Metal Architecture, Interrupt-Driven SPI/DMA, and
-                  Deterministic FreeRTOS Task Scheduling
- @target         : STM32 (ARM Cortex-M4 Architecture)
- 
-
 #include <stdint.h>
 #include "FreeRTOS.h"
 #include "task.h"
@@ -22,11 +15,11 @@ static uint8_t telemetry_buffer[8] = {1, 2, 3, 4, 5, 6, 7, 8};
 
 int main(void)
 {
-    //Bare-Metal Hardware Register Configuration.
-    RCC_AHB1ENR |= (1 << 3);   //Enable clock gating for GPIOD.
-    GPIOD_MODER |= (1 << 24); //GPIOD Pin 12 as general-purpose output.
+    //Bare-Metal Hardware Configuration.
+    RCC_AHB1ENR |= (1 << 3);   
+    GPIOD_MODER |= (1 << 24); 
 
-    //Interrupt-driven, DMA-backed SPI1 initialization.
+    //Interrupt-driven,DMA-backedSPI1 initialization.
     spi1_dma_init();
 
     //RTOS synchronization primitive for ISR -> task handoff.
@@ -39,13 +32,12 @@ int main(void)
 
     //Core kernel boot sequence.
     vTaskStartScheduler();
-    while (1); //Only reached if scheduler init fails..
+    while (1); //if init fails..
 }
 
 void vSensorTelemetryTask(void *pvParameters)
 {
     while (1) {
-        //Kick off a non-blocking, CPU-offloaded DMA transfer.
         spi1_dma_transmit(telemetry_buffer, sizeof(telemetry_buffer));
         vTaskDelay(pdMS_TO_TICKS(100));
     }
@@ -65,7 +57,6 @@ void vSpiDmaConsumerTask(void *pvParameters)
     while (1) {
         if (xSemaphoreTake(xSpiDmaCompleteSemaphore, portMAX_DELAY) == pdTRUE) {
             spi1_dma_transfer_complete = false;
-            //Handle post-transfer logic here (e.g., mark buffer free).
         }
     }
 }
